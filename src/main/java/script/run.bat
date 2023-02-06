@@ -16,14 +16,12 @@ start "" dotnet Logger.dll
 
 :: Bots
 cd ../reference-bot-publish/
-timeout /t 3
+timeout /t 1
 start "" dotnet ReferenceBot.dll
-timeout /t 3
+timeout /t 1
 start "" dotnet ReferenceBot.dll
-timeout /t 3
-start "" java -jar "D:\Coding\Tubes_and_Kerja\tubes\stima\Tubes1_DewaHaKi\target\JavaBot.jar"
-timeout /t 3
+timeout /t 1
+start "" dotnet ReferenceBot.dll
+timeout /t 1
 start "" java -jar "D:\Coding\Tubes_and_Kerja\tubes\stima\Tubes1_DewaHaKi\target\JavaBot.jar"
 cd ../
-
-pause

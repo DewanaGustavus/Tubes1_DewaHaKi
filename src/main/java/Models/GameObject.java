@@ -10,6 +10,7 @@ public class GameObject {
   public Integer currentHeading;
   public Position position;
   public ObjectTypes gameObjectType;
+  // ! belum handle info enum yang kurang
   // ! public Effect 
   public Integer TorpedoSalvoCount;
   
@@ -63,8 +64,7 @@ public class GameObject {
     this.gameObjectType = gameObjectType;
   }
 
-  public static GameObject FromStateList(UUID id, List<Integer> stateList)
-  {
+  public static GameObject FromStateList(UUID id, List<Integer> stateList) {
     Position position = new Position(stateList.get(4), stateList.get(5));
     return new GameObject(id, stateList.get(0), stateList.get(1), stateList.get(2), position, ObjectTypes.valueOf(stateList.get(3)));
   }

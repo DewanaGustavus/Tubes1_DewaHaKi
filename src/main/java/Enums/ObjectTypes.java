@@ -20,6 +20,10 @@ public enum ObjectTypes {
     this.value = value;
   }
 
+  public Integer getValue(){
+    return this.value;
+  }
+
   public static ObjectTypes valueOf(Integer value) {
     for (ObjectTypes objectType : ObjectTypes.values()) {
       if (objectType.value == value) return objectType;
