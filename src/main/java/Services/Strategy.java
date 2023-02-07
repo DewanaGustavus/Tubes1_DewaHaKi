@@ -55,19 +55,32 @@ public class Strategy {
             }
         }
 
+        // defualt action
         playerAction.action = PlayerActions.FORWARD;
         playerAction.heading = random.nextInt(360);
+
+        // calc nearest dist
         double distFood = notEmpty(objectList[2]) ? getDistanceBetween(bot, objectList[2].get(0)) : infinity;
         double distCloud = notEmpty(objectList[4]) ? getDistanceBetween(bot, objectList[4].get(0)) : infinity;
+        double distPlayer = notEmpty(objectList[1], 1) ? getDistanceBetween(bot, objectList[1].get(1)) : infinity;
+
+        // greed food or avoid cloud or run from player
         if(distFood != infinity || distCloud != infinity){
             playerAction.heading = distFood < distCloud ? getHeadingBetween(objectList[2].get(0)) : ((getHeadingBetween(objectList[4].get(0)) + 180) % 360);
         }
+        if(distPlayer < distFood && distPlayer < distCloud && distPlayer != infinity && objectList[1].get(1).size > bot.size){
+            playerAction.heading = (getHeadingBetween(objectList[1].get(1)) + 180) % 360;
+        }
 
+        // firing torpedo?
         int fireChance = random.nextInt(100);
+        if(bot.TorpedoSalvoCount >= 4)fireChance = 100; // maximum is 5, dont waste
         if(fireChance > 95 && notEmpty(objectList[1], 1)){
             playerAction.action = PlayerActions.FIRETORPEDOES;
             playerAction.heading = getHeadingBetween(objectList[1].get(1));
         }
+
+        // give action to runner
         service.setPlayerAction(playerAction);
     }
 
