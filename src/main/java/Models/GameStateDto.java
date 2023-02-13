@@ -28,7 +28,5 @@ public class GameStateDto {
     return playerObjects;
   }
 
-  public void setPlayerObjects(Map<String, List<Integer>> playerObjects) {
-    playerObjects = playerObjects;
-  }
+  public void setPlayerObjects(Map<String, List<Integer>> playerObjects) { this.playerObjects = playerObjects; }
 }
