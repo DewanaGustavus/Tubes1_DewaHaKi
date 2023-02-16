@@ -17,9 +17,9 @@ start "" dotnet Logger.dll
 :: Bots
 cd ../reference-bot-publish/
 timeout /t 2
-start "" dotnet ReferenceBot.dll
-start "" dotnet ReferenceBot.dll
-start "" dotnet ReferenceBot.dll
+start "" java -jar "D:\Coding\Tubes_and_Kerja\tubes\stima\Tubes1_DewaHaKi\target\JavaBot.jar"
+start "" java -jar "D:\Coding\Tubes_and_Kerja\tubes\stima\Tubes1_DewaHaKi\target\JavaBot.jar"
+start "" java -jar "D:\Coding\Tubes_and_Kerja\tubes\stima\Tubes1_DewaHaKi\target\JavaBot.jar"
 start "" java -jar "D:\Coding\Tubes_and_Kerja\tubes\stima\Tubes1_DewaHaKi\target\JavaBot.jar"
 cd ../
 @REM start "" dotnet ReferenceBot.dll

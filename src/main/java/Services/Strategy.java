@@ -20,6 +20,7 @@ public class Strategy {
     public static List<GameObject> weakEnemy;
     public static List<GameObject> strongEnemy;
     public static long startTime;
+    public static boolean supernovaFired = false;
     
     public static void compute(BotService service, PlayerAction playerAction){
         startTime = System.nanoTime();
@@ -40,6 +41,7 @@ public class Strategy {
         // debugBotInfo(playerAction, 1); // tick, execution time, bot info
         // debugBotInfo(playerAction, 2); // bot inventory
         // debugBotInfo(playerAction, 3); // enemy info
+        // debugBotInfo(playerAction, 4); // supernova
         service.setPlayerAction(playerAction);
     }
 
@@ -198,14 +200,17 @@ public class Strategy {
 
     public static void fireTeleporterLogic(PlayerAction playerAction){
         double minimumSize = 80;
+        double enemyMinimumSize = 30; // eat very small enemy not worth it (?) at cost of firing teleport
+        double bigSize = 170;
 		int fireChance = random.nextInt(100);
-        if (bot.size>250) fireChance=random.nextInt(40,100);
+        if (bot.size > bigSize) fireChance=random.nextInt(40,100);
         if(isEmpty(weakEnemy) || bot.TeleporterCount == 0 || bot.size < minimumSize 
             || notEmpty(objectList[10]) || fireChance < 97)return;
         double distLowerBound = 1200;
         double weakSizeMultiplier = 0.9;
         GameObject target = null;
         for(GameObject enemy : weakEnemy){
+            if(enemy.size < enemyMinimumSize)continue;
             if(enemy.size > (bot.size - 20) * weakSizeMultiplier)continue;
             if(getDistanceBetween(bot, enemy) <= distLowerBound){
                 target = enemy;
@@ -220,7 +225,7 @@ public class Strategy {
 
     public static void teleportLogic(PlayerAction playerAction){
         if(isEmpty(objectList[10]))return;
-        double distLowerBound = 20; 
+        double distLowerBound = 25; 
         for(GameObject teleporter : objectList[10]){
             for(GameObject enemy : weakEnemy){
                 double dist = getDistanceBetween(enemy, teleporter);
@@ -235,18 +240,18 @@ public class Strategy {
 
     public static void shieldLogic(PlayerAction playerAction){
         int minimumSize = 50;
-        if(bot.ShieldCount == 0 || bot.size < minimumSize)return;
-        double distLowerBound = 100;
-        double toleratedAngle = 30;
+        if(bot.ShieldCount == 0 || bot.size < minimumSize || isEmpty(objectList[6]))return;
+        double distLowerBound = 250; // big because delay (?)
+        double toleratedAngle = 10;
         boolean useShield = false;
-        if(notEmpty(objectList[6])){
+        double minimumTorpedoSize = 3;
         for(GameObject torpedo : objectList[6]){
+            if(torpedo.size <= minimumTorpedoSize)continue;
             double dist = getDistanceBetween(bot, torpedo) - bot.size - torpedo.size;
             int angle1 = Math.abs(torpedo.currentHeading - ((getHeadingBetween(torpedo) + 180) % 360));
-            if(dist > distLowerBound || (angle1 > toleratedAngle && angle1 < (360-toleratedAngle)) )continue;
+            if(dist > distLowerBound || angle1 > toleratedAngle)continue;
             useShield = true;
             break;
-        }
         }
         if(useShield)playerAction.action = PlayerActions.ACTIVATESHIELD;
     }
@@ -260,18 +265,26 @@ public class Strategy {
     }
 
     public static void fireSupernovaLogic(PlayerAction playerAction){
-        
+        if(bot.SupernovaAvailable != 0){
+            playerAction.heading = getHeadingBetween(objectList[1].get(objectList[1].size()-1)); // farthest player
+            playerAction.action = PlayerActions.FIRESUPERNOVA;
+        }
     }
     
     public static void detonateSupernovaLogic(PlayerAction playerAction){
-        
+        if(isEmpty(objectList[9]))return;
+        double distLowerBound = 300;
+        if(getShortestObjectListDistance(objectList[9]) > distLowerBound){
+            playerAction.action = PlayerActions.DETONATESUPERNOVA;
+            supernovaFired = true;
+        }
+
     }
 
-
     public static void runFromBorder(PlayerAction playerAction){
-        double distLowerBound = 20 ;
-        if(world.getCurrentTick()!=null)distLowerBound+=world.getCurrentTick()/5;
         if(world == null || world.getRadius() == null)return;
+        double distLowerBound = 20;
+        if(world.getCurrentTick()!=null)distLowerBound+=world.getCurrentTick()/10;
         double dist = world.radius - getDistanceBetween(bot.getPosition(), world.centerPoint) - bot.size;
         if(dist > distLowerBound)return;
         playerAction.heading = getHeadingBetween(world.centerPoint);
@@ -288,6 +301,7 @@ public class Strategy {
         1. tick, execution time, bot info
         2. bot inventory
         3. enemy info
+        4. supernova
         */ 
         if(gameState.getWorld().getCurrentTick() == null)return;
         if(debugType == 1){
@@ -320,6 +334,30 @@ public class Strategy {
                 System.out.println(Arrays.toString(playerInfo));
             }
             System.out.println();
+        }else if(debugType == 4){
+            if(supernovaFired){
+                System.out.printf("Tick : %d\n", world.getCurrentTick());
+                for(GameObject gas : objectList[4]){
+                    System.out.printf("Size : %d\n", gas.size);
+                }
+                System.out.println();
+                return;
+            }
+                
+            boolean pickedSupernova = false;
+            for(GameObject player : objectList[1])if(player.SupernovaAvailable == 1)pickedSupernova = true;
+            if(isEmpty(objectList[9]) && !pickedSupernova && isEmpty(objectList[8]))return;
+            System.out.printf("Tick : %d\n", world.getCurrentTick());
+            if(notEmpty(objectList[8]))
+                for(GameObject pickup : objectList[8])
+                    System.out.printf("There is pickup in %d,%d size %d\n", pickup.position.x, pickup.position.y, pickup.size);
+                    
+            if(notEmpty(objectList[9]))
+                for(GameObject bomb : objectList[9])
+                    System.out.printf("There is bomb in %d,%d size %d\n", bomb.position.x, bomb.position.y, bomb.size);
+            if(pickedSupernova)System.out.println("Someone have supernova");
+            System.out.println();
+
         }
     }
 
