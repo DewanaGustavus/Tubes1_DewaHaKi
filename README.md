@@ -41,6 +41,7 @@ Penjelasan dari strategi _greedy_ di atas dapat dilihat pada file laporan yang t
 │   └── main
 │       └── java
 │           ├── Enums
+│           │   ├── Effects.java
 │           │   ├── ObjectTypes.java
 │           │   └── PlayerActions.java
 │           ├── META-INF
@@ -73,7 +74,7 @@ Penjelasan dari strategi _greedy_ di atas dapat dilihat pada file laporan yang t
 │               ├── run.bat
 │               └── runx.bat
 └── target
-    ├── JavaBot.jar
+    ├── DewaHaKi.jar
     ├── classes
     ├── libs
     ├── maven-archiver

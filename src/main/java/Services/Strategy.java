@@ -38,7 +38,7 @@ public class Strategy {
         fireSupernovaLogic(playerAction); 
         detonateSupernovaLogic(playerAction); 
         
-        // debugBotInfo(playerAction, 1); // tick, execution time, bot info
+        debugBotInfo(playerAction, 1); // tick, execution time, bot info
         // debugBotInfo(playerAction, 2); // bot inventory
         // debugBotInfo(playerAction, 3); // enemy info
         // debugBotInfo(playerAction, 4); // supernova
@@ -112,7 +112,7 @@ public class Strategy {
         // get strong and weak enemy
         weakEnemy = new ArrayList<GameObject>();
         strongEnemy = new ArrayList<GameObject>();
-		int weakEnemySizeOffset = 20;
+		int weakEnemySizeOffset = 15;
         if(isEmpty(objectList[1]))return;
         objectList[1].remove(0); // remove ourself from list
         for(GameObject player : objectList[1]){
@@ -130,6 +130,11 @@ public class Strategy {
     }
 
     public static void moveLogic(PlayerAction playerAction){
+        if(bot.effect.haveAfterburner()){
+            moveToEnemy(playerAction);
+            return;
+        }
+
         List<List<GameObject>> towardObject = new ArrayList<List<GameObject>>();
         towardObject.add(objectList[2]); // food
         towardObject.add(objectList[7]); // super food
@@ -140,6 +145,7 @@ public class Strategy {
         avoidObject.add(objectList[4]); // gas
         // avoidObject.add(objectList[5]); // asteroid
         avoidObject.add(objectList[6]); // torpedo
+        avoidObject.add(objectList[9]); // supernova bomb
         avoidObject.add(objectList[10]); // teleporter
         avoidObject.add(strongEnemy);
 
@@ -196,15 +202,15 @@ public class Strategy {
 
     public static void fireTeleporterLogic(PlayerAction playerAction){
         double minimumSize = 80;
-        double enemyMinimumSize = 30; // eat very small enemy not worth it (?) at cost of firing teleport
+        double enemyMinimumSize = 25; // eat very small enemy not worth it (?) at cost of firing teleport
         double bigSize = 170;
 		int fireChance = random.nextInt(100);
         if(bot.size > bigSize) fireChance=random.nextInt(40,100);
         if(isEmpty(weakEnemy) || bot.TeleporterCount == 0 || bot.size < minimumSize 
             || notEmpty(objectList[10]) || fireChance < 97)return;
-        double minimumDist = 150;
-        double distLowerBound = 1200;
-        double weakSizeMultiplier = 0.9;
+        double minimumDist = 50;
+        double distLowerBound = 1400;
+        double weakSizeMultiplier = 0.92;
         GameObject target = null;
         for(GameObject enemy : weakEnemy){
             double dist = getDistanceBetween(bot, enemy) - bot.size - enemy.size;
@@ -223,7 +229,7 @@ public class Strategy {
 
     public static void teleportLogic(PlayerAction playerAction){
         if(isEmpty(objectList[10]))return;
-        double distLowerBound = 25; 
+        double distLowerBound = 20; 
         for(GameObject teleporter : objectList[10]){
             for(GameObject enemy : weakEnemy){
                 double dist = getDistanceBetween(enemy, teleporter);
@@ -239,8 +245,8 @@ public class Strategy {
     public static void shieldLogic(PlayerAction playerAction){
         int minimumSize = 50;
         if(bot.ShieldCount == 0 || bot.size < minimumSize || isEmpty(objectList[6]))return;
-        double distLowerBound = 250; // big because delay (?)
-        double toleratedAngle = 10;
+        double distLowerBound = 100; // big because delay (?)
+        double toleratedAngle = 7.5;
         boolean useShield = false;
         double minimumTorpedoSize = 3;
         for(GameObject torpedo : objectList[6]){
@@ -256,16 +262,17 @@ public class Strategy {
 
     public static void activateAfterBurnerLogic(PlayerAction playerAction){
         if(bot.effect.haveAfterburner())return;
-        int maximumDist = 150;
+        int maximumDist = 60;
         double minimumSize = 80;
         if(isEmpty(objectList[1]) || bot.size < minimumSize)return;
-        double bigSize = 200;
+        double bigSize = 150;
 		int fireChance = random.nextInt(100);
-        if(bot.size > bigSize)fireChance = random.nextInt(45,60);
-        if(fireChance < 50)return;
+        if(bot.size > bigSize)fireChance = random.nextInt(40,100);
+        if(fireChance < 75)return;
         double enemyMinimumSize = 20; // eat very small enemy not worth it (?)
         double usingBoosterCostOffset = 15;
-        double weakSizeMultiplier = 0.9;
+        double weakSizeMultiplier = 0.75;
+        double strongSizeMultiplier = 1.25;
         boolean useBooster = false;
         for(GameObject enemy : weakEnemy){
             double dist = getDistanceBetween(bot, enemy) - bot.size - enemy.size;
@@ -277,8 +284,8 @@ public class Strategy {
             }
         }
         for(GameObject enemy : strongEnemy){
-            // ? maybe also using size offset so don't run from only slightly bigger enemy
             double dist = getDistanceBetween(bot, enemy) - bot.size - enemy.size;
+            if(enemy.size < (bot.size - usingBoosterCostOffset) * strongSizeMultiplier)continue;
             if(dist <= maximumDist){
                 useBooster = true;
                 break;
@@ -289,13 +296,28 @@ public class Strategy {
 
     public static void deactivateAfterBurnerLogic(PlayerAction playerAction){
         if(!bot.effect.haveAfterburner())return;
-        double minimumSize = 60;
+        double minimumSize = 50;
         boolean turnoffBooster= true;
+        double usingBoosterCostOffset = 7;
+        double weakSizeMultiplier = 0.9;
+        double strongSizeMultiplier = 1.1;
         if(notEmpty(objectList[1]) || bot.size >= minimumSize){
-            int maximumDist = 160;
-            for(GameObject enemy : objectList[1]){
+            int maximumDist = 70;
+            for(GameObject enemy : weakEnemy){
                 double dist = getDistanceBetween(bot, enemy) - bot.size - enemy.size;
-                if(dist < maximumDist)turnoffBooster = false;
+                if(enemy.size > (bot.size - usingBoosterCostOffset) * weakSizeMultiplier)continue;
+                if(dist < maximumDist){
+                    turnoffBooster = false;
+                    break;
+                }
+            }
+            for(GameObject enemy : strongEnemy){
+                double dist = getDistanceBetween(bot, enemy) - bot.size - enemy.size;
+                if(enemy.size < (bot.size - usingBoosterCostOffset) * strongSizeMultiplier)continue;
+                if(dist < maximumDist){
+                    turnoffBooster = false;
+                    break;
+                }
             }
         }
         if(turnoffBooster)playerAction.action = PlayerActions.STOPAFTERBURNER;
@@ -310,12 +332,32 @@ public class Strategy {
     
     public static void detonateSupernovaLogic(PlayerAction playerAction){
         if(isEmpty(objectList[9]))return;
-        double distLowerBound = 300;
+        double distLowerBound = 200;
         if(getShortestObjectListDistance(objectList[9]) > distLowerBound){
             playerAction.action = PlayerActions.DETONATESUPERNOVA;
             supernovaFired = true;
         }
 
+    }
+
+    public static void moveToEnemy(PlayerAction playerAction){
+        if(isEmpty(objectList[1]))return;
+        double nearestDist = infinity;
+        for(GameObject enemy : weakEnemy){
+            double dist = getDistanceBetween(bot, enemy);
+            if(dist < nearestDist){
+                nearestDist = dist;
+                playerAction.heading = getHeadingBetween(enemy);
+            }
+        }
+        
+        for(GameObject enemy : strongEnemy){
+            double dist = getDistanceBetween(bot, enemy);
+            if(dist < nearestDist){
+                nearestDist = dist;
+                playerAction.heading = (getHeadingBetween(enemy) + 180) % 360;
+            }
+        }
     }
 
     public static void runFromBorder(PlayerAction playerAction){
