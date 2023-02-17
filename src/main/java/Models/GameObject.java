@@ -10,7 +10,7 @@ public class GameObject {
   public Integer currentHeading;
   public Position position;
   public ObjectTypes gameObjectType;
-  public Integer effect; // ! belum di handle
+  public Effects effect;
   public Integer TorpedoSalvoCount;
   public Integer SupernovaAvailable;
   public Integer TeleporterCount;
@@ -24,7 +24,7 @@ public class GameObject {
     this.currentHeading = currentHeading;
     this.position = position;
     this.gameObjectType = gameObjectType;
-    this.effect = 0;
+    this.effect = new Effects(0);
     this.TorpedoSalvoCount = 0;
     this.SupernovaAvailable = 0;
     this.TeleporterCount = 0;
@@ -38,7 +38,7 @@ public class GameObject {
     this.currentHeading = currentHeading;
     this.position = position;
     this.gameObjectType = gameObjectType;
-    this.effect = effect;
+    this.effect = new Effects(effect);
     this.TorpedoSalvoCount = TorpedoSalvoCount;
     this.SupernovaAvailable = SupernovaAvailable;
     this.TeleporterCount = TeleporterCount;
