@@ -8,7 +8,7 @@ Tugas Besar I IF2211 Strategi Algoritma Semester II Tahun 2022/2023, Pemanfaatan
 - [Strategi Greedy Program](#strategi-greedy-program)
 - [Struktur Program](#struktur-program)
 - [Requirement Program](#requirement-program)
-- [Cara Kompilasi dan Menjalankan Program](#cara-kompilasi-dan-menjalankan-program)
+- [Cara Menjalankan Program](#cara-menjalankan-program)
 - [Link Demo Program](#link-demo-program)
 - [Author Program](#author-program)
 
@@ -36,6 +36,10 @@ Penjelasan dari strategi _greedy_ di atas dapat dilihat pada file laporan yang t
 .
 ├── Dockerfile
 ├── README.md
+├── bin
+│   └── DewaHaKi.jar
+├── doc
+│   └── Dewa HaKi.pdf
 ├── pom.xml
 ├── src
 │   └── main
@@ -87,7 +91,7 @@ Penjelasan dari strategi _greedy_ di atas dapat dilihat pada file laporan yang t
 - .Net Core 5.x
 - Java versi 11 (minimum)
 
-## Cara Kompilasi dan Menjalankan Program
+## Cara Menjalankan Program
 
 1. Download file `starter-pack.zip` pada link [berikut](https://github.com/EntelectChallenge/2021-Galaxio/releases/tag/2021.3.2)
 2. Unzip file `starter-pack.zip`
@@ -103,12 +107,15 @@ Penjelasan dari strategi _greedy_ di atas dapat dilihat pada file laporan yang t
 12. Jalankan masing-masing bot sesuai dengan jumlah yang telah ditentukan pada langkah 5, dengan command `java -jar path_ke_file_jar_hasil_clone_repositori_ini` untuk menggunakan bot ini, atau command `dotnet path_to_GameRunner.dll_di_dalam_folder_starter_pack` untuk menjalankan reference bot.
 
 > P.S. Langkah 6-12 dapat digantikan dengan membuat suatu script file `.bat` baru bagi yang menggunakan sistem operasi Windows atau mengedit script file `run.sh` yang telah disediakan bagi yang menggunakan sistem operasi berbasis unix. Kemdudian untuk menjalankan game hanya perlu menjalankan script file tersebut.
+> Jika ingin melakukan modifikasi pada bot ini dan melakukan _build_ ulang, maka dapat menggunakan _maven_ atau _intelliJ_ untuk melakukan buildnya. Jika menggunakan _maven_ dapat menggunakan perintah `mvn clean package` pada root _source code_ repositori ini.
 
 ## Link Demo Program
+
+[Link Demo](https://youtu.be/uBFEmvtEkP4)
 
 ## Author Program
 
 Made with ❤️ by
-- [Farizki Kurniawan (13521082)]()
-- [I Putu Bakta Hari Sudewa (13521150)]()
-- [Dewana Gustavus Haraka Otang (13521173)]()
+- Farizki Kurniawan (13521082)
+- I Putu Bakta Hari Sudewa (13521150)
+- Dewana Gustavus Haraka Otang (13521173)
