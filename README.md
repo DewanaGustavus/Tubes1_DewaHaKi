@@ -36,8 +36,6 @@ Penjelasan dari strategi _greedy_ di atas dapat dilihat pada file laporan yang t
 .
 ├── Dockerfile
 ├── README.md
-├── bin
-│   └── DewaHaKi.jar
 ├── doc
 │   └── Dewa HaKi.pdf
 ├── pom.xml
